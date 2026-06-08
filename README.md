@@ -52,15 +52,3 @@ git clone [https://github.com/YOUR-USERNAME/vishal_textiles.git](https://github.
 cd vishal_textiles
 ```
 ---
-## 📝 To-Do 
-[ ] Initialize Next.js project and clean up boilerplate.
-
-[ ] Setup Tailwind CSS configuration with the custom color palette.
-
-[ ] Add the WhatsApp Image 2026-06-03 at 9.15.19 PM.jpeg logo to the /public folder.
-
-[ ] Build the global Navigation Bar.
-
-[ ] Build the Hero Section.
-
-[ ] Decide on contact form backend architecture.
