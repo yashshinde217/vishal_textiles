@@ -419,10 +419,31 @@
   #gallery { background: var(--cream-deep); }
   .gallery-inner { max-width: 1100px; margin: 0 auto; }
   .gallery-title { margin-bottom: 60px; text-align: center; }
-  .gallery-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 24px; align-items: center;
+
+  /* Unified mosaic grid — 4 pair wrappers */
+  .gallery-mosaic {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 24px;
+    row-gap: 28px;
+    align-items: start;
   }
+
+  /* Each pair stacks its children vertically */
+  .gm-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* Left col */
+  .gm-pair-left-1 { grid-column: 1; grid-row: 1; }
+  .gm-pair-left-2 { grid-column: 1; grid-row: 2; }
+
+  /* Right col */
+  .gm-pair-right-1 { grid-column: 2; grid-row: 1; }
+  .gm-pair-right-2 { grid-column: 2; grid-row: 2; }
+
   .gallery-img {
     overflow: hidden; cursor: pointer;
     position: relative;
@@ -442,15 +463,21 @@
   .gallery-img:hover .gallery-img-overlay { background: rgba(12,12,14,.05); }
   .gallery-img-tall { aspect-ratio: 4/5; }
   .gallery-img-wide { aspect-ratio: 16/9; }
-  .gallery-side { display: flex; flex-direction: column; gap: 24px; }
   .gallery-quote {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(18px, 2vw, 26px);
+    font-size: clamp(16px, 1.8vw, 24px);
     font-style: italic; font-weight: 300;
     color: var(--ink-soft);
     line-height: 1.55;
     padding-left: 20px;
     border-left: 2px solid var(--gold);
+  }
+
+  /* Mobile: single column */
+  @media (max-width: 900px) {
+    .gallery-mosaic { grid-template-columns: 1fr; }
+    .gm-pair-left-1, .gm-pair-left-2,
+    .gm-pair-right-1, .gm-pair-right-2 { grid-column: 1; grid-row: unset; }
   }
 
   /* LIGHTBOX */
@@ -471,6 +498,31 @@
     transition: color .2s;
   }
   #lightbox-close:hover { color: #fff; }
+
+  /* ---- GALLERY PLACEHOLDER ---- */
+  .gallery-img-placeholder {
+    background: linear-gradient(145deg, #1c1c22 0%, #0c0c0e 100%);
+    cursor: default;
+  }
+  .gallery-img-placeholder::before {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(184,151,106,.065) 31px, rgba(184,151,106,.065) 32px),
+      repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(184,151,106,.065) 31px, rgba(184,151,106,.065) 32px);
+  }
+  .gallery-placeholder-content {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 14px;
+  }
+  .ph-icon { color: var(--gold); opacity: .2; }
+  .ph-text {
+    font-size: 9px; letter-spacing: .3em;
+    text-transform: uppercase;
+    color: rgba(184,151,106,.28);
+  }
 
   /* ---- CONTACT ---- */
   #contact { background: var(--cream); }
@@ -616,18 +668,27 @@
     #about { grid-template-columns: 1fr; gap: 48px; }
     .stats-row { grid-column: 1; grid-template-columns: repeat(3,1fr); }
     .aboutus-grid { grid-template-columns: 1fr; }
-    .timeline::before { left: 20px; }
-    .tl-item { grid-template-columns: 20px 1fr; grid-template-rows: auto auto; gap: 0 16px; }
-    .tl-item.left .tl-left,
+    .timeline::before { left: 24px; }
+    .tl-item { grid-template-columns: 48px 1fr; gap: 0; }
+    .tl-center { grid-column: 1; grid-row: 1; justify-content: center; padding-top: 4px; }
+
+    /* LEFT items: content lives in .tl-left — surface it in column 2 */
+    .tl-item.left .tl-left {
+      grid-column: 2; grid-row: 1;
+      text-align: left; padding-right: 0; padding-left: 16px;
+      opacity: 1; pointer-events: all;
+    }
+    .tl-item.left .tl-right { display: none; }
+
+    /* RIGHT items: content lives in .tl-right — surface it in column 2 */
     .tl-item.right .tl-left { display: none; }
-    .tl-left, .tl-right { grid-column: 2; }
-    .tl-center { grid-column: 1; grid-row: 1; }
-    .tl-item.left .tl-right,
-    .tl-item.right .tl-right { opacity: 1; padding-left: 0; }
+    .tl-item.right .tl-right {
+      grid-column: 2; grid-row: 1;
+      opacity: 1; padding-left: 16px; pointer-events: all;
+    }
     .counter-grid { grid-template-columns: 1fr; }
     .counter-item { border-right: none; border-bottom: 1px solid rgba(0,0,0,.1); }
     .counter-item:last-child { border-bottom: none; }
-    .gallery-grid { grid-template-columns: 1fr; }
     .nav-links { display: none; }
     .hamburger { display: block; }
   }
@@ -636,6 +697,11 @@
     .stat-item { border-right: none; border-bottom: 1px solid rgba(0,0,0,.08); padding: 20px 0; }
     .stat-item:last-child { border-bottom: none; }
     section { padding: 80px 6vw; }
+    .journey-intro { margin-bottom: 56px; }
+    .tl-item { margin-bottom: 48px; }
+    .tl-title { font-size: 22px; }
+    .tl-body { font-size: 13px; }
+    .journey-footer { margin-top: 56px; padding-top: 36px; }
   }
 
   /* Mobile nav drawer */
@@ -664,7 +730,7 @@
 <!-- NAV -->
 <nav id="main-nav">
   <a class="nav-logo" href="#home">
-    <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/wAARCABAAEADASIAAhEBAxEB/8QAGgAAAgMBAQAAAAAAAAAAAAAAAAMBAgQFBv/EAB0QAAICAgMAAAAAAAAAAAAAAAABAgMREiEx/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A8yijRVQdKMW6KFQAAAAAAAAAAAAAAAAAAAAABS3MeWtujrMvUrQaVIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//Z" alt="Vishal Textiles Logo">
+    <img src="assets/VishalTextiles.jpeg" alt="Vishal Textiles Logo">
   </a>
   <div class="nav-links">
     <a href="#about">Philosophy</a>
@@ -921,20 +987,51 @@
       <p class="label section-eyebrow">Archive</p>
       <h2 class="section-title">Industrial <em>Aesthetics.</em></h2>
     </div>
-    <div class="gallery-grid">
-      <div class="gallery-img gallery-img-tall reveal" onclick="openLightbox(this)">
-        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT9LpeltDKZ-J-LTXlImPlRExtwxV-h7YgUNvXKiGJkB3hfzlJ2mMTcHEd8ty15v5MJNliRUrXYbLhur_cqIj0sN_BlhlsKyCVMUh5HitwErIdd8nNXitk0XIXVD1x0yH9_e_olHXuJOysWjNzVrhDdw0tC1w63dZ2IyW-45nw2p-G6UOontVQW2XKItI8flY4PdeLGIo6fh-NRcAeZhLnOin38eEAvwiFSYAz20OdWMUBJa9SImF5Ek1TWUJ-j32xc6tlxA0yrf0" alt="Fabric detail">
-        <div class="gallery-img-overlay"></div>
+    <!-- Mosaic: 4 pairs, each image+quote wrapped together -->
+    <div class="gallery-mosaic">
+
+      <!-- Pair 1: Left col, row 1 — tall image + quote -->
+      <div class="gm-pair gm-pair-left-1">
+        <div class="gallery-img gallery-img-tall reveal" onclick="openLightbox(this)">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT9LpeltDKZ-J-LTXlImPlRExtwxV-h7YgUNvXKiGJkB3hfzlJ2mMTcHEd8ty15v5MJNliRUrXYbLhur_cqIj0sN_BlhlsKyCVMUh5HitwErIdd8nNXitk0XIXVD1x0yH9_e_olHXuJOysWjNzVrhDdw0tC1w63dZ2IyW-45nw2p-G6UOontVQW2XKItI8flY4PdeLGIo6fh-NRcAeZhLnOin38eEAvwiFSYAz20OdWMUBJa9SImF5Ek1TWUJ-j32xc6tlxA0yrf0" alt="Fabric detail">
+          <div class="gallery-img-overlay"></div>
+        </div>
+        <blockquote class="gallery-quote reveal">"In every metre of fabric lies a story of precision, passion, and the pursuit of enduring quality."</blockquote>
       </div>
-      <div class="gallery-side reveal reveal-delay-1">
-        <div class="gallery-img gallery-img-wide" onclick="openLightbox(this)">
+
+      <!-- Pair 2: Right col, row 1 — wide image + quote -->
+      <div class="gm-pair gm-pair-right-1">
+        <div class="gallery-img gallery-img-wide reveal reveal-delay-1" onclick="openLightbox(this)">
           <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxBRK-WkVs0rDMZ-G2g0lVfmBAsx65vMs0IBBZvxZKo7IisA0rx0epsYuWdynuoWPD0I3KR6I51mVGaEuPMUknWnSl8iD7EAZ4vNqHZkaYGI85HoYFp4G8vSUqhJ9g6RwLftgdgVFt1Uov7qzL0__kPa63cgn5JIV7ps13eL7lOgF5MNBIsRCJn46hSbt-Yb78Go6EguDuJUyzUCbLflRNCOPiNUdCb0uuc8wf6fXor-CYWYs5Xidel3MMk5LOE4cku29lY3aVEeQ" alt="Factory texture">
           <div class="gallery-img-overlay"></div>
         </div>
-        <blockquote class="gallery-quote">"Every thread is a testament to our relentless pursuit of perfection."</blockquote>
+        <blockquote class="gallery-quote reveal reveal-delay-1">"Every thread is a testament to our relentless pursuit of perfection."</blockquote>
       </div>
-    </div>
-  </div>
+
+      <!-- Pair 3: Left col, row 2 — placeholder -->
+      <div class="gm-pair gm-pair-left-2">
+        <div class="gallery-img gallery-img-wide gallery-img-placeholder reveal">
+          <div class="gallery-placeholder-content">
+            <svg class="ph-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M9 5l1.5-2h3L15 5"/></svg>
+            <span class="ph-text">Your Image Here</span>
+          </div>
+          <div class="gallery-img-overlay"></div>
+        </div>
+      </div>
+
+      <!-- Pair 4: Right col, row 2 — placeholder -->
+      <div class="gm-pair gm-pair-right-2">
+        <div class="gallery-img gallery-img-tall gallery-img-placeholder reveal reveal-delay-1">
+          <div class="gallery-placeholder-content">
+            <svg class="ph-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M9 5l1.5-2h3L15 5"/></svg>
+            <span class="ph-text">Your Image Here</span>
+          </div>
+          <div class="gallery-img-overlay"></div>
+        </div>
+      </div>
+
+    </div><!-- /gallery-mosaic -->
+  </div><!-- /gallery-inner -->
 </section>
 
 <!-- LIGHTBOX -->
@@ -944,7 +1041,7 @@
 </div>
 
 <!-- FOOTER -->
-<footer id="contact">
+<footer id="contact" style="background-color: #0c0c0e;">
   <div class="footer-top">
     <div class="footer-brand reveal">
       <p class="footer-eyebrow">Vishal Textiles Group</p>
