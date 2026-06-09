@@ -420,49 +420,6 @@
   .gallery-inner { max-width: 1100px; margin: 0 auto; }
   .gallery-title { margin-bottom: 60px; text-align: center; }
 
-  /* Unified mosaic grid — 4 pair wrappers */
-  .gallery-mosaic {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 24px;
-    row-gap: 28px;
-    align-items: start;
-  }
-
-  /* Each pair stacks its children vertically */
-  .gm-pair {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-  }
-
-  /* Left col */
-  .gm-pair-left-1 { grid-column: 1; grid-row: 1; }
-  .gm-pair-left-2 { grid-column: 1; grid-row: 2; }
-
-  /* Right col */
-  .gm-pair-right-1 { grid-column: 2; grid-row: 1; }
-  .gm-pair-right-2 { grid-column: 2; grid-row: 2; }
-
-  .gallery-img {
-    overflow: hidden; cursor: pointer;
-    position: relative;
-  }
-  .gallery-img img {
-    width: 100%; height: 100%; object-fit: cover;
-    transition: transform 1s ease, filter .4s ease;
-    filter: saturate(.5) contrast(1.1);
-    display: block;
-  }
-  .gallery-img:hover img { transform: scale(1.04); filter: saturate(.8) contrast(1.05); }
-  .gallery-img-overlay {
-    position: absolute; inset: 0;
-    background: rgba(12,12,14,.25);
-    transition: background .5s;
-  }
-  .gallery-img:hover .gallery-img-overlay { background: rgba(12,12,14,.05); }
-  .gallery-img-tall { aspect-ratio: 4/5; }
-  .gallery-img-wide { aspect-ratio: 16/9; }
   .gallery-quote {
     font-family: 'Cormorant Garamond', serif;
     font-size: clamp(16px, 1.8vw, 24px);
@@ -473,11 +430,142 @@
     border-left: 2px solid var(--gold);
   }
 
-  /* Mobile: single column */
+  /* ---- SLIDESHOW ---- */
+  .gallery-slideshow {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--ink);
+  }
+
+  /* Quote above slideshow */
+  .gallery-quote-above {
+    margin-bottom: 40px;
+    max-width: 600px;
+  }
+
+  .slideshow-track { position: absolute; inset: 0; }
+
+  .slideshow-slide {
+    position: absolute; inset: 0;
+    opacity: 0;
+    transition: opacity .9s cubic-bezier(.45, 0, .55, 1);
+    z-index: 0;
+  }
+  .slideshow-slide.active { opacity: 1; z-index: 1; }
+
+  .slideshow-slide img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: saturate(.5) contrast(1.1);
+    display: block;
+  }
+  .gallery-img-overlay {
+    position: absolute; inset: 0;
+    background: rgba(12,12,14,.28);
+  }
+
+  /* Placeholder slides */
+  .slide-placeholder {
+    position: absolute; inset: 0;
+    background: linear-gradient(145deg, #1c1c22 0%, #0c0c0e 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px;
+  }
+  .slide-placeholder::before {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(184,151,106,.065) 31px, rgba(184,151,106,.065) 32px),
+      repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(184,151,106,.065) 31px, rgba(184,151,106,.065) 32px);
+  }
+  .slide-placeholder .ph-icon { color: var(--gold); opacity: .2; position: relative; z-index: 1; }
+  .slide-placeholder .ph-text { position: relative; z-index: 1; }
+  .ph-code {
+    position: relative; z-index: 1;
+    font-family: 'DM Sans', monospace;
+    font-size: 10px; letter-spacing: .08em;
+    color: rgba(184,151,106,.45);
+    background: rgba(184,151,106,.06);
+    border: 1px solid rgba(184,151,106,.15);
+    padding: 5px 12px;
+    margin-top: 4px;
+  }
+
+  /* Prev / Next arrows — frosted-glass circles */
+  .slideshow-arrow {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    z-index: 10;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.18);
+    color: rgba(255,255,255,.75);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: background .35s ease, border-color .35s ease,
+                color .35s ease, transform .35s ease;
+    padding: 0;
+  }
+  .slideshow-arrow:hover {
+    background: rgba(184,151,106,.18);
+    border-color: rgba(184,151,106,.55);
+    color: var(--gold);
+    transform: translateY(-50%) scale(1.08);
+  }
+  .arrow-prev { left: 22px; }
+  .arrow-next { right: 22px; }
+  .slideshow-arrow svg { pointer-events: none; }
+
+  /* Dot indicators */
+  .slideshow-dots {
+    position: absolute;
+    bottom: 36px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex; gap: 8px; align-items: center;
+  }
+  .sd-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.22);
+    border: none; cursor: pointer; padding: 0;
+    transition: background .45s ease, width .45s cubic-bezier(.16,1,.3,1), border-radius .45s ease;
+    flex-shrink: 0;
+  }
+  .sd-dot.active {
+    background: var(--gold);
+    width: 24px; border-radius: 2.5px;
+  }
+
+  /* Progress bar */
+  .slideshow-progress {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 2px;
+    background: var(--gold);
+    opacity: .7;
+    width: 0%;
+    z-index: 10;
+    will-change: width;
+  }
+  .slideshow-progress.running {
+    width: 100%;
+    transition: width 2s linear;
+  }
+
   @media (max-width: 900px) {
-    .gallery-mosaic { grid-template-columns: 1fr; }
-    .gm-pair-left-1, .gm-pair-left-2,
-    .gm-pair-right-1, .gm-pair-right-2 { grid-column: 1; grid-row: unset; }
+    .gallery-slideshow { aspect-ratio: 4 / 3; }
+    .arrow-prev { left: 14px; }
+    .arrow-next { right: 14px; }
+    .slideshow-arrow { width: 40px; height: 40px; }
+  }
+  @media (max-width: 600px) {
+    .gallery-slideshow { aspect-ratio: 3 / 2; }
   }
 
   /* LIGHTBOX */
@@ -500,24 +588,6 @@
   #lightbox-close:hover { color: #fff; }
 
   /* ---- GALLERY PLACEHOLDER ---- */
-  .gallery-img-placeholder {
-    background: linear-gradient(145deg, #1c1c22 0%, #0c0c0e 100%);
-    cursor: default;
-  }
-  .gallery-img-placeholder::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background-image:
-      repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(184,151,106,.065) 31px, rgba(184,151,106,.065) 32px),
-      repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(184,151,106,.065) 31px, rgba(184,151,106,.065) 32px);
-  }
-  .gallery-placeholder-content {
-    position: absolute; inset: 0; z-index: 2;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 14px;
-  }
-  .ph-icon { color: var(--gold); opacity: .2; }
   .ph-text {
     font-size: 9px; letter-spacing: .3em;
     text-transform: uppercase;
@@ -737,7 +807,7 @@
     <a href="#aboutus">About Us</a>
     <a href="#journey">Journey</a>
     <a href="#services">Capacity</a>
-    <a href="#gallery">Archive</a>
+    <a href="#gallery">Gallery</a>
     <a href="#contact" class="nav-cta">Contact</a>
   </div>
   <span class="material-symbols-outlined hamburger" id="hamburger-btn">menu</span>
@@ -750,7 +820,7 @@
   <a href="#aboutus" onclick="closeMobileNav()">About Us</a>
   <a href="#journey" onclick="closeMobileNav()">Journey</a>
   <a href="#services" onclick="closeMobileNav()">Capacity</a>
-  <a href="#gallery" onclick="closeMobileNav()">Archive</a>
+  <a href="#gallery" onclick="closeMobileNav()">Gallery</a>
   <a href="#contact" onclick="closeMobileNav()">Contact</a>
 </div>
 
@@ -984,53 +1054,93 @@
 <section id="gallery">
   <div class="gallery-inner">
     <div class="gallery-title reveal">
-      <p class="label section-eyebrow">Archive</p>
+      <p class="label section-eyebrow">Gallery</p>
       <h2 class="section-title">Industrial <em>Aesthetics.</em></h2>
     </div>
-    <!-- Mosaic: 4 pairs, each image+quote wrapped together -->
-    <div class="gallery-mosaic">
 
-      <!-- Pair 1: Left col, row 1 — tall image + quote -->
-      <div class="gm-pair gm-pair-left-1">
-        <div class="gallery-img gallery-img-tall reveal" onclick="openLightbox(this)">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT9LpeltDKZ-J-LTXlImPlRExtwxV-h7YgUNvXKiGJkB3hfzlJ2mMTcHEd8ty15v5MJNliRUrXYbLhur_cqIj0sN_BlhlsKyCVMUh5HitwErIdd8nNXitk0XIXVD1x0yH9_e_olHXuJOysWjNzVrhDdw0tC1w63dZ2IyW-45nw2p-G6UOontVQW2XKItI8flY4PdeLGIo6fh-NRcAeZhLnOin38eEAvwiFSYAz20OdWMUBJa9SImF5Ek1TWUJ-j32xc6tlxA0yrf0" alt="Fabric detail">
+    <!-- Quote above slideshow -->
+    <blockquote class="gallery-quote gallery-quote-above reveal">
+      "Every thread is a testament to our relentless pursuit of perfection."
+    </blockquote>
+
+    <!-- Cinematic Slideshow -->
+    <div class="gallery-slideshow reveal">
+      <div class="slideshow-track">
+
+        <!-- Slide 1 — Real image -->
+        <div class="slideshow-slide active">
+          <img src="assets/1.jpg" alt="Fabric detail">
           <div class="gallery-img-overlay"></div>
         </div>
-        <blockquote class="gallery-quote reveal">"In every metre of fabric lies a story of precision, passion, and the pursuit of enduring quality."</blockquote>
-      </div>
 
-      <!-- Pair 2: Right col, row 1 — wide image + quote -->
-      <div class="gm-pair gm-pair-right-1">
-        <div class="gallery-img gallery-img-wide reveal reveal-delay-1" onclick="openLightbox(this)">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxBRK-WkVs0rDMZ-G2g0lVfmBAsx65vMs0IBBZvxZKo7IisA0rx0epsYuWdynuoWPD0I3KR6I51mVGaEuPMUknWnSl8iD7EAZ4vNqHZkaYGI85HoYFp4G8vSUqhJ9g6RwLftgdgVFt1Uov7qzL0__kPa63cgn5JIV7ps13eL7lOgF5MNBIsRCJn46hSbt-Yb78Go6EguDuJUyzUCbLflRNCOPiNUdCb0uuc8wf6fXor-CYWYs5Xidel3MMk5LOE4cku29lY3aVEeQ" alt="Factory texture">
+        <!-- Slide 2 — Real image -->
+        <div class="slideshow-slide">
+          <img src="assets/2.jpg" alt="Factory texture">
           <div class="gallery-img-overlay"></div>
         </div>
-        <blockquote class="gallery-quote reveal reveal-delay-1">"Every thread is a testament to our relentless pursuit of perfection."</blockquote>
-      </div>
 
-      <!-- Pair 3: Left col, row 2 — placeholder -->
-      <div class="gm-pair gm-pair-left-2">
-        <div class="gallery-img gallery-img-wide gallery-img-placeholder reveal">
-          <div class="gallery-placeholder-content">
-            <svg class="ph-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M9 5l1.5-2h3L15 5"/></svg>
-            <span class="ph-text">Your Image Here</span>
-          </div>
+        <!-- Slide 3 — replace placeholder with your image -->
+        <div class="slideshow-slide">
+          <img src="assets/3.jpg" alt="Factory texture">
           <div class="gallery-img-overlay"></div>
         </div>
-      </div>
 
-      <!-- Pair 4: Right col, row 2 — placeholder -->
-      <div class="gm-pair gm-pair-right-2">
-        <div class="gallery-img gallery-img-tall gallery-img-placeholder reveal reveal-delay-1">
-          <div class="gallery-placeholder-content">
-            <svg class="ph-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M9 5l1.5-2h3L15 5"/></svg>
-            <span class="ph-text">Your Image Here</span>
-          </div>
+        <!-- Slide 4 — replace placeholder with your image -->
+        <div class="slideshow-slide">
+          <img src="assets/4.jpg" alt="Factory texture">
           <div class="gallery-img-overlay"></div>
         </div>
+
+        <!-- Slide 5 — replace placeholder with your image -->
+        <div class="slideshow-slide">
+          <img src="assets/5.jpg" alt="Factory texture">
+          <div class="gallery-img-overlay"></div>
+        </div>
+
+        <!-- Slide 6 — replace placeholder with your image -->
+        <div class="slideshow-slide">
+          <img src="assets/6.jpg" alt="Factory texture">
+          <div class="gallery-img-overlay"></div>
+        </div>
+
+        <!-- Slide 7 — replace placeholder with your image -->
+        <div class="slideshow-slide">
+          <img src="assets/7.jpg" alt="Factory texture">
+          <div class="gallery-img-overlay"></div>
+        </div>
+
+      </div><!-- /slideshow-track -->
+
+      <!-- Prev arrow -->
+      <button class="slideshow-arrow arrow-prev" id="arrow-prev" aria-label="Previous slide">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+
+      <!-- Next arrow -->
+      <button class="slideshow-arrow arrow-next" id="arrow-next" aria-label="Next slide">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+
+      <!-- Dot indicators -->
+      <div class="slideshow-dots" id="slideshow-dots">
+        <button class="sd-dot active" aria-label="Slide 1"></button>
+        <button class="sd-dot" aria-label="Slide 2"></button>
+        <button class="sd-dot" aria-label="Slide 3"></button>
+        <button class="sd-dot" aria-label="Slide 4"></button>
+        <button class="sd-dot" aria-label="Slide 5"></button>
+        <button class="sd-dot" aria-label="Slide 6"></button>
+        <button class="sd-dot" aria-label="Slide 7"></button>
       </div>
 
-    </div><!-- /gallery-mosaic -->
+      <!-- Progress bar -->
+      <div class="slideshow-progress" id="slideshow-progress"></div>
+
+    </div><!-- /gallery-slideshow -->
+
   </div><!-- /gallery-inner -->
 </section>
 
@@ -1074,7 +1184,7 @@
         <a href="#aboutus" class="footer-link">About Us</a>
         <a href="#journey" class="footer-link">Our Journey</a>
         <a href="#services" class="footer-link">Capacity</a>
-        <a href="#gallery" class="footer-link">Archive</a>
+        <a href="#gallery" class="footer-link">Gallery</a>
       </div>
 
       <!-- Social -->
@@ -1179,7 +1289,72 @@
   }, { threshold: 0.5 });
   counters.forEach(c => cntObs.observe(c));
 
-  // ---- Lightbox ----
+  // ---- Slideshow ----
+  (function () {
+    const slides    = document.querySelectorAll('.slideshow-slide');
+    const dots      = document.querySelectorAll('.sd-dot');
+    const progress  = document.getElementById('slideshow-progress');
+    const container = document.querySelector('.gallery-slideshow');
+
+    let current = 0;
+    let timer   = null;
+    let paused  = false;
+    const DURATION = 3000;   // ms per slide
+    const TOTAL    = slides.length;
+
+    function goTo(idx) {
+      slides[current].classList.remove('active');
+      dots[current].classList.remove('active');
+
+      current = (idx + TOTAL) % TOTAL;
+
+      slides[current].classList.add('active');
+      dots[current].classList.add('active');
+
+      // Reset & restart progress bar
+      progress.classList.remove('running');
+      progress.style.transition = 'none';
+      progress.style.width = '0%';
+
+      // Force reflow so the transition restarts cleanly
+      void progress.offsetWidth;
+      progress.style.transition = '';
+      progress.classList.add('running');
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      timer = setInterval(() => {
+        if (!paused) goTo(current + 1);
+      }, DURATION);
+    }
+
+    // Dot click
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        goTo(i);
+        startTimer();
+      });
+    });
+
+    // Arrow clicks
+    document.getElementById('arrow-prev').addEventListener('click', () => {
+      goTo(current - 1);
+      startTimer();
+    });
+    document.getElementById('arrow-next').addEventListener('click', () => {
+      goTo(current + 1);
+      startTimer();
+    });
+
+    // Pause on hover
+    container.addEventListener('mouseenter', () => { paused = true; });
+    container.addEventListener('mouseleave', () => { paused = false; });
+
+    // Kick off
+    goTo(0);
+    startTimer();
+  })();
   function openLightbox(el) {
     document.getElementById('lightbox-img').src = el.querySelector('img').src;
     document.getElementById('lightbox').classList.add('open');
